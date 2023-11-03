@@ -7,6 +7,7 @@ module.exports = async function main({ getNamedAccouts, deployments }) {
     const { deployer } = await getNamedAccounts();
     let vrfCoordinatorV2Address, subscriptionId, VRFCoordinatorV2Mock;
     const chainId = network.config.chainId;
+    console.log(chainId);
     if (chainId == 31337) {
         VRFCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
         vrfCoordinatorV2Address = VRFCoordinatorV2Mock.address;
@@ -17,6 +18,7 @@ module.exports = async function main({ getNamedAccouts, deployments }) {
     }
     else {
         vrfCoordinatorV2Address = networkConfig[chainId]["vrfCoordinatorV2"];
+
         subscriptionId = networkConfig[chainId]["subscriptionId"]
     }
     const entranceFee = networkConfig[chainId]["entranceFee"]
@@ -28,10 +30,19 @@ module.exports = async function main({ getNamedAccouts, deployments }) {
     log(vrfCoordinatorV2Address + "  - > this is address");
     const lottery = await deploy("Lottery", {
         from: deployer,
-        args: [vrfCoordinatorV2Address, entranceFee, gasLane, subscriptionId, callbackGasLimit, interval],
+        args: args,
         log: true,
         waitConfirmations: network.config.blockConfirmations || 1,
     });
+    log(`Lottery deployed at ${lottery.address}`);
+    
+    
+    const lotteryContract = await ethers.getContractAt("Lottery", lottery.address);
+
+    // Call the desired function
+    
+
+    console.log(lotteryContract);
     // if (!developmentChains.includes(network.name) && ETHERSCAN_API_KEY);
     // await verify(lottery.address, args);
 };
